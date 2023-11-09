@@ -2,10 +2,11 @@
 
 namespace App\Providers;
 
+use App\Listeners\InitializePrayerTimeDatabase;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
+use Native\Laravel\Events\App\ApplicationBooted;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -17,6 +18,9 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+        ApplicationBooted::class => [
+            InitializePrayerTimeDatabase::class,
         ],
     ];
 

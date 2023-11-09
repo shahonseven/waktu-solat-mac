@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\PrayerTime as EnumsPrayerTime;
 use App\Http\SaloonRequests\MalaysiaPrayerTimeRequest;
 use App\Models\PrayerTime;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -30,9 +31,12 @@ class MalaysiaPrayerTimeService
 
         $results = $response->json();
 
-        $results = collect($results['response']['times'])
+        $results = collect((array) $results['response']['times'])
             ->map(function ($times) {
-                return array_combine(['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'], $times);
+                return collect(EnumsPrayerTime::cases())
+                    ->pluck('value')
+                    ->combine((array) $times)
+                    ->toArray();
             })
             ->all();
 
