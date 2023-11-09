@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use Native\Laravel\Facades\Window;
 use Native\Laravel\Contracts\ProvidesPhpIni;
+use Native\Laravel\Facades\Window;
 
 class NativeAppServiceProvider implements ProvidesPhpIni
 {
@@ -18,6 +18,8 @@ class NativeAppServiceProvider implements ProvidesPhpIni
 
     /**
      * Return an array of php.ini directives to be set.
+     * 
+     * @return array<mixed>
      */
     public function phpIni(): array
     {
