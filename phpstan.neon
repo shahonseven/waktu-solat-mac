@@ -6,4 +6,7 @@ parameters:
         - app/
         - database/seeders/
 
+    excludePaths:
+        - app/Spiders/
+        
     level: 9
