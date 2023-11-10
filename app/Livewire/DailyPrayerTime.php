@@ -8,16 +8,31 @@ use App\Models\PrayerTime;
 use App\Services\MalaysiaPrayerTimeService;
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class DailyPrayerTime extends Component
 {
+    public mixed $code;
+
+    public mixed $theme;
+
+    public array $locationCodes;
+
     public PrayerTime $prayerTimes;
 
-    public function boot(MalaysiaPrayerTimeService $malaysiaPrayerTimeService): void
+    public string $activeTab = 'prayer-time';
+
+    public function mount(MalaysiaPrayerTimeService $malaysiaPrayerTimeService): void
     {
-        $this->prayerTimes = $malaysiaPrayerTimeService->get();
+        $this->code = option('code', env('DEFAULT_LOCATION_CODE'));
+
+        $this->theme = option('theme', 'light');
+
+        $this->locationCodes = LocationCode::query()->get()->groupBy('state')->toArray();
+
+        $this->prayerTimes = $malaysiaPrayerTimeService->get(code: $this->code);
     }
 
     #[Computed]
@@ -26,13 +41,13 @@ class DailyPrayerTime extends Component
         $currentPrayerName = '';
 
         foreach ($this->prayerNames() as $prayerName) {
-            $isPast = $this->prayerTimes->{$prayerName->value} <= now()->timestamp;
+            $isPast = Carbon::createFromTimestamp($this->prayerTimes->{$prayerName->value})->lessThanOrEqualTo(now());
 
             if ($isPast) {
                 $currentPrayerName = $prayerName->value;
             }
         }
-        
+
         return $currentPrayerName;
     }
 
@@ -48,11 +63,22 @@ class DailyPrayerTime extends Component
     #[Computed]
     public function prayerTimeLocation(): string
     {
-        return LocationCode::query()->where('code', option('code', 'wlp-0'))->first()?->location ?? 'N/A';
+        return LocationCode::query()->where('code', $this->code)->first()?->location ?? 'N/A';
     }
 
     public function render(): Renderable
     {
         return view('livewire.daily-prayer-time');
+    }
+
+    public function save(): void
+    {
+        option(['code' => $this->code ?? env('DEFAULT_LOCATION_CODE'), 'theme' => $this->theme]);
+
+        unset($this->prayerTimeLocation);
+
+        $this->prayerTimes = (new MalaysiaPrayerTimeService())->get(code: $this->code, fresh: true);
+
+        redirect(request()->header('Referer'));
     }
 }

@@ -20,6 +20,6 @@ class InitializePrayerTimeDatabase
      */
     public function handle(ApplicationBooted $event): void
     {
-        (new MalaysiaPrayerTimeService())->get();
+        (new MalaysiaPrayerTimeService())->get(fresh: true);
     }
 }

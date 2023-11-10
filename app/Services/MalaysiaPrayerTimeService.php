@@ -10,22 +10,28 @@ use Illuminate\Support\Facades\DB;
 
 class MalaysiaPrayerTimeService
 {
-    public function get(): PrayerTime
+    public function get($code = null, bool $fresh = false): PrayerTime
     {
+        if ($fresh) {
+            $this->refresh($code ?? env('DEFAULT_LOCATION_CODE'));
+        }
+
         $query = PrayerTime::query()->where('fajr', '>=', now()->startOfDay()->timestamp);
 
         try {
             return $query->clone()->firstOrFail();
         } catch (ModelNotFoundException $e) {
-            $this->refresh(new MalaysiaPrayerTimeRequest());
+            $this->refresh();
 
             return $query->clone()->firstOrFail();
         }
     }
 
-    public function refresh(MalaysiaPrayerTimeRequest $request): void
+    public function refresh(string $code = null): void
     {
-        $request->query()->add('code', \option('code', 'wlp-0'));
+        $request = new MalaysiaPrayerTimeRequest();
+
+        $request->query()->add('code', $code ?? env('DEFAULT_LOCATION_CODE'));
 
         $response = $request->send();
 
