@@ -20,6 +20,7 @@
                             'btn',
                             'btn-outline-light text-dark' => $theme == 'light',
                             'btn-outline-dark text-light' => $theme == 'dark',
+                            'border-0',
                         ])
                         type="button"
                         wire:click="$set('activeTab', 'preference')"
@@ -70,6 +71,7 @@
                             'btn',
                             'btn-outline-light text-dark' => $theme == 'light',
                             'btn-outline-dark text-light' => $theme == 'dark',
+                            'border-0',
                         ])
                         type="button"
                         wire:click="$set('activeTab', 'prayer-time')"
