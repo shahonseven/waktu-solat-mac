@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class MalaysiaPrayerTimeService
 {
-    public function get($code = null, bool $fresh = false): PrayerTime
+    public function get(string $code = null, bool $fresh = false): PrayerTime
     {
         if ($fresh) {
             $this->refresh($code ?? env('DEFAULT_LOCATION_CODE'));
