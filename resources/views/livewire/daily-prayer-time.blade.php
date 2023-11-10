@@ -10,11 +10,15 @@
             id="prayer-time"
             x-transition
         >
-            <h3 class="d-flex justify-content-between mb-3">
-                {{ __('Prayer Time') }}
-                <small class="fs-6">
-                    {{ $this->prayerTimeLocation }}
-                
+            <div class="d-flex justify-content-between mb-3">
+                <h4>{{ __('Prayer Time') }}</h4>
+
+                <div class="d-flex">
+                    <small>
+                        {{ $this->prayerTimeLocation }}<br>
+                        {{ now()->toHijri()->format('d F Y') }}
+                    </small>
+
                     <button
                         @class([
                             'btn',
@@ -27,8 +31,8 @@
                     >
                         <i class="bi bi-sliders2"></i>
                     </button>
-                </small>
-            </h3>
+                </div>
+            </div>
 
             <div wire:poll>
                 <ul class="list-group">
@@ -40,11 +44,11 @@
                             'align-items-start',
                             'active' => $this->currentPrayerName == $prayerName->value,
                         ])>
-                            <div class="ms-2 me-auto fs-2">
-                                {{ \Carbon\Carbon::createFromTimestamp($prayerTimes->{$prayerName->value})->format('h:i a') }}
+                            <div class="ms-2 me-auto">
+                                {{ \Carbon\Carbon::createFromTimestamp($prayerTimes->{$prayerName->value})
+                                    ->format('h:i a') }}
                             </div>
                             <span @class([
-                                'fs-6',
                                 'text-light' => $this->currentPrayerName == $prayerName->value,
                             ])>{{ $prayerName->label() }}</span>
                         </li>
@@ -61,9 +65,10 @@
             ])
             id="preference"
         >
-            <h3 class="d-flex justify-content-between mb-3">
-                {{ __('Prayer Time') }}
-                <small class="fs-6">
+            <div class="d-flex justify-content-between mb-3">
+                <h4>{{ __('Prayer Time') }}</h4>
+
+                <small>
                     {{ __('Preference') }}
                 
                     <button
@@ -79,7 +84,7 @@
                         <i class="bi bi-x-circle"></i>
                     </button>
                 </small>
-            </h3>
+            </div>
 
             <form wire:submit="save">
                 <div class="mb-3">
@@ -101,22 +106,39 @@
                     </select>
                 </div>
 
-                <div class="mb-3">
-                    <label for="code" class="form-label">
-                        {{ __('Theme') }}
-                    </label>
-                    <select class="form-select" id="code" wire:model="theme">
-                        @foreach (['dark', 'light'] as $theme)
-                            <option
-                                value="{{ $theme }}"
-                            >
-                                {{ ucwords($theme) }}
-                            </option>
-                        @endforeach
-                    </select>
+                <div class="row mb-5">
+                    <div class="col">
+                        <label for="locale" class="form-label">
+                            {{ __('Language') }}
+                        </label>
+                        <select class="form-select" id="locale" wire:model="locale">
+                            @foreach (['en' => __('English'), 'ms' => __('Malay')] as $code => $language)
+                                <option
+                                    value="{{ $code }}"
+                                >
+                                    {{ __($language) }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col">
+                        <label for="code" class="form-label">
+                            {{ __('Theme') }}
+                        </label>
+                        <select class="form-select" id="code" wire:model="theme">
+                            @foreach (['dark', 'light'] as $theme)
+                                <option
+                                    value="{{ $theme }}"
+                                >
+                                    {{ __(ucwords($theme)) }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
 
-                <div class="text-end">
+                <div class="mb-3 text-end">
                     <button
                         class="btn btn-primary"
                         type="submit"
