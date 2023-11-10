@@ -45,12 +45,12 @@
                             'active' => $this->currentPrayerName == $prayerName->value,
                         ])>
                             <div class="ms-2 me-auto">
-                                {{ \Carbon\Carbon::createFromTimestamp($prayerTimes->{$prayerName->value})
+                                {{ \Carbon\Carbon::createFromTimestamp($this->prayerTimes->{$prayerName->value})
                                     ->format('h:i a') }}
                             </div>
-                            <span @class([
+                            <small @class([
                                 'text-light' => $this->currentPrayerName == $prayerName->value,
-                            ])>{{ $prayerName->label() }}</span>
+                            ])>{{ $prayerName->label() }}</small>
                         </li>
                     @endforeach
                 </ul>
@@ -92,7 +92,7 @@
                         {{ __('Location') }}
                     </label>
                     <select class="form-select" id="code" wire:model="code">
-                        @foreach ($locationCodes as $i => $locations)
+                        @foreach ($this->locationCodes as $i => $locations)
                             <optgroup label="{{ $i }}">
                                 @foreach ($locations as $location)
                                     <option
