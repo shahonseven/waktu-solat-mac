@@ -1,0 +1,18 @@
+{
+    "Prayer Time": "Waktu Solat",
+    "Fajr": "Subuh",
+    "Sunrise": "Syuruk",
+    "Dhuhr": "Zohor",
+    "Asr": "Asar",
+    "Isha": "Isyak",
+    "Location": "Lokasi",
+    "Theme": "Tema",
+    "Update": "Kemaskini",
+    "Preference": "Pilihan",
+    "Light": "Cerah",
+    "Dark": "Gelap",
+    "Language": "Bahasa",
+    "Malay": "Melayu",
+    "English": "Inggeris",
+    "It is now the %s prayer time for the %s area.": "Sekarang telah masuk waktu solat %s bagi kawasan %s."
+}
