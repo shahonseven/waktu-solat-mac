@@ -13,7 +13,11 @@ class NativeAppServiceProvider implements ProvidesPhpIni
      */
     public function boot(): void
     {
-        MenuBar::create();
+        MenuBar::create()
+            // ->label(__('Prayer Time'))
+            ->alwaysOnTop(true)
+            ->height(340)
+            ->width(400);
     }
 
     /**
