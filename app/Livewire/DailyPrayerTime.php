@@ -8,7 +8,6 @@ use App\Models\PrayerTime;
 use App\Services\MalaysiaPrayerTimeService;
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -18,9 +17,7 @@ class DailyPrayerTime extends Component
 
     public mixed $theme;
 
-    public array $locationCodes;
-
-    public PrayerTime $prayerTimes;
+    public mixed $locale;
 
     public string $activeTab = 'prayer-time';
 
@@ -30,9 +27,7 @@ class DailyPrayerTime extends Component
 
         $this->theme = option('theme', 'light');
 
-        $this->locationCodes = LocationCode::query()->get()->groupBy('state')->toArray();
-
-        $this->prayerTimes = $malaysiaPrayerTimeService->get(code: $this->code);
+        $this->locale = option('locale', config('app.fallback_locale'));
     }
 
     #[Computed]
@@ -41,7 +36,7 @@ class DailyPrayerTime extends Component
         $currentPrayerName = '';
 
         foreach ($this->prayerNames() as $prayerName) {
-            $isPast = Carbon::createFromTimestamp($this->prayerTimes->{$prayerName->value})->lessThanOrEqualTo(now());
+            $isPast = Carbon::createFromTimestamp($this->prayerTimes()->{$prayerName->value})->lessThanOrEqualTo(now());
 
             if ($isPast) {
                 $currentPrayerName = $prayerName->value;
@@ -52,12 +47,27 @@ class DailyPrayerTime extends Component
     }
 
     /**
+     * @return array<mixed>
+     */
+    #[Computed]
+    public function locationCodes()
+    {
+        return LocationCode::query()->get()->groupBy('state')->toArray();
+    }
+
+    /**
      * @return EnumsPrayerTime[]
      */
     #[Computed]
     public function prayerNames()
     {
         return EnumsPrayerTime::cases();
+    }
+
+    #[Computed]
+    public function prayerTimes(): PrayerTime
+    {
+        return (new MalaysiaPrayerTimeService())->get(code: option('code', env('DEFAULT_LOCATION_CODE')));
     }
 
     #[Computed]
@@ -73,11 +83,16 @@ class DailyPrayerTime extends Component
 
     public function save(): void
     {
-        option(['code' => $this->code ?? env('DEFAULT_LOCATION_CODE'), 'theme' => $this->theme]);
+        option([
+            'code' => $this->code ?? env('DEFAULT_LOCATION_CODE'),
+            'theme' => $this->theme,
+            'locale' => $this->locale ?? config('app.fallback_locale'),
+        ]);
 
         unset($this->prayerTimeLocation);
+        unset($this->prayerTimes);
 
-        $this->prayerTimes = (new MalaysiaPrayerTimeService())->get(code: $this->code, fresh: true);
+        (new MalaysiaPrayerTimeService())->get(code: $this->code, fresh: true);
 
         redirect(request()->header('Referer'));
     }
